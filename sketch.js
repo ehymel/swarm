@@ -7,7 +7,8 @@ function setup() {
 
     showLines = false;
 
-    resources = Array(2);
+    resourcesCount = 2;
+    resources = Array(resourcesCount);
     resourceRadius = 10;
     resourceLabels = ['a', 'b', 'c', 'd'];
     resourceColors = [color(200, 10, 10), color(10, 200, 10), color(10, 10, 200), color(150, 200, 200)];
@@ -27,15 +28,22 @@ function setup() {
     restartButton.mouseClicked(start);
 
     slider = createSlider(0, 60, droneListeningDistance, 1);
-    slider.position(250, 25)
+    slider.position(225, 25)
     slider.style('width', '100px');
+
+    decreaseResourcesButton = createButton('- Resource');
+    decreaseResourcesButton.position(350, 25);
+    decreaseResourcesButton.mouseClicked(decreaseResourceCount);
+
+    increaseResourcesButton = createButton('+ Resource');
+    increaseResourcesButton.position(450, 25);
+    increaseResourcesButton.mouseClicked(increaseResourceCount);
 
     this.start();
 }
 
 function start() {
-
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < resourcesCount; i++) {
         resources[i] = new Resource(resourceLabels[i], resourceColors[i], resourceLocations[i]);
     }
 
@@ -57,8 +65,8 @@ function draw() {
 
     stroke(255);
     fill(255);
-    textSize(16);
-    text(slider.value(), width - 35, 25);
+    textSize(14);
+    text('Listening radius = ' + slider.value(), width - 90, 25);
 
     droneListeningDistance = slider.value();
 
@@ -90,4 +98,18 @@ function draw() {
 
 function toggleLines() {
     showLines = !showLines;
+}
+
+function decreaseResourceCount() {
+    if (resourcesCount > 2) {
+        --resourcesCount;
+        start();
+    }
+}
+
+function increaseResourceCount() {
+    if (resourcesCount <= 4) {
+        ++resourcesCount;
+        start();
+    }
 }

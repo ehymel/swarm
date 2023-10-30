@@ -15,7 +15,7 @@ class Drone {
 
         this.location = createVector(
             int(random(0.3 * width, 0.7 * width)),
-            int(random(2 * droneRadius, width - 2 * droneRadius))
+            int(random(0.3 * height, 0.7 * height))
         );
 
         this.velocity = createVector(
