@@ -66,9 +66,13 @@ function draw() {
     stroke(255);
     fill(255);
     textSize(14);
-    text('Listening radius = ' + slider.value(), width - 90, 25);
+    text('Listening distance = ' + slider.value(), width - 90, 25);
 
     droneListeningDistance = slider.value();
+
+    stroke(100);
+    fill('rgba(218, 112, 214, 0.25)');
+    circle(width - 30 - droneListeningDistance/2, 35 + droneListeningDistance/2, droneListeningDistance);
 
     for (let i = 0; i < resources.length; i++) {
         resources[i].show();
