@@ -1,14 +1,12 @@
 function setup() {
     createCanvas(600, 400);
 
-    drones = Array(2000);
     droneRadius = 0.5;
     droneListeningDistance = 28;
 
     showLines = false;
 
     resourcesCount = 2;
-    resources = Array(resourcesCount);
     resourceRadius = 10;
     resourceLabels = ['a', 'b', 'c', 'd'];
     resourceColors = [color(200, 10, 10), color(10, 200, 10), color(10, 10, 200), color(150, 200, 200)];
@@ -43,6 +41,7 @@ function setup() {
 }
 
 function start() {
+    resources = Array(resourcesCount);
     for (let i = 0; i < resourcesCount; i++) {
         resources[i] = new Resource(resourceLabels[i], resourceColors[i], resourceLocations[i]);
     }
@@ -52,6 +51,7 @@ function start() {
     //     resources[1] = new Resource('B', color(10, 200, 10));
     // }
 
+    drones = Array(2000);
     for (let i = 0; i < drones.length; i++) {
         drones[i] = new Drone();
         while (drones[i].checkForResourceCollision() !== null) {
@@ -106,14 +106,14 @@ function toggleLines() {
 
 function decreaseResourceCount() {
     if (resourcesCount > 2) {
-        --resourcesCount;
+        resourcesCount--;
         start();
     }
 }
 
 function increaseResourceCount() {
-    if (resourcesCount <= 4) {
-        ++resourcesCount;
+    if (resourcesCount < 4) {
+        resourcesCount++;
         start();
     }
 }
