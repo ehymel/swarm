@@ -79,14 +79,13 @@ class Drone {
             this.targetResourceIndex = (collidedResourceIndex + 1) % resources.length;
 
             // change color to match new target resource
-            this.droneColor = resources[this.targetResourceIndex].getColor();
+            this.droneColor = resources[this.targetResourceIndex].resourceColor;
         }
     }
 
     listenToMe() {
         let newAnnoucement = false;
-        for (let i = 0; i < drones.length; i++) {
-            let listeningDrone = drones[i];
+        for (let listeningDrone of drones) {
             // ignore self
             if (this === listeningDrone) {
                 continue;
@@ -150,7 +149,7 @@ class Drone {
             return;
         }
 
-        let lineColor = targetResourceIndex ? resources[targetResourceIndex].getColor() : 'light grey';
+        let lineColor = targetResourceIndex ? resources[targetResourceIndex].resourceColor : 'light grey';
 
         stroke(lineColor);
         line(drone1.location.x, drone1.location.y, drone2.location.x, drone2.location.y);

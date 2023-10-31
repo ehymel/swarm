@@ -46,11 +46,6 @@ function start() {
         resources[i] = new Resource(resourceLabels[i], resourceColors[i], resourceLocations[i]);
     }
 
-    // // make sure new resource is separated from first resource
-    // while (resources[0].getLocation().dist(resources[1].getLocation()) < 10 * resourceRadius) {
-    //     resources[1] = new Resource('B', color(10, 200, 10));
-    // }
-
     drones = Array(2000);
     for (let i = 0; i < drones.length; i++) {
         drones[i] = new Drone();
@@ -74,29 +69,30 @@ function draw() {
     fill('rgba(218, 112, 214, 0.25)');
     circle(width - 30 - droneListeningDistance/2, 35 + droneListeningDistance/2, droneListeningDistance);
 
-    for (let i = 0; i < resources.length; i++) {
-        resources[i].show();
+    for (let r of resources) {
+        r.show();
     }
-    for (let i = 0; i < drones.length; i++) {
-        drones[i].move();
+
+    for (let d of drones) {
+        d.move();
     }
 
     let newAnnouncement = false;
-    for (let i = 0; i < drones.length; i++) {
-        if (drones[i].announcing) {
-            newAnnouncement = drones[i].listenToMe() && newAnnouncement;
+    for (let drone of drones) {
+        if (drone.announcing) {
+            newAnnouncement = drone.listenToMe() && newAnnouncement;
         }
     }
     while (newAnnouncement) {
-        for (let i = 0; i < drones.length; i++) {
-            if (drones[i].announcing) {
-                newAnnouncement = drones[i].listenToMe() && newAnnouncement;
+        for (let drone of drones) {
+            if (drone.announcing) {
+                newAnnouncement = drone.listenToMe() && newAnnouncement;
             }
         }
     }
 
-    for (let i = 0; i < drones.length; i++) {
-        drones[i].show();
+    for (let d of drones) {
+        d.show();
     }
 }
 
