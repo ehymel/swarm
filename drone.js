@@ -47,16 +47,23 @@ class Drone {
         if (this.location.y + droneRadius > height) {
             this.velocity.y *= -1;
         }
+    }
 
-        // check for resource collision
-        let collidedResourceIndex = this.checkForResourceCollision();
-        if (null === collidedResourceIndex) {
-            this.announcing = false;
-            return;
+    checkForResourceCollision(qtree) {
+        // only need to check items within quadtree boundaries
+        for (let i = 0; i < resources.length; i++) {
+            let nearbyPoints = qtree.queryRange(resources[i].boundary);
+
+            for (let point of nearbyPoints) {
+                if (this === point.userData) {
+                    this.announcing = true;
+                    this.handleResourceCollision(collidedResourceIndex);
+                    return i;
+                }
+            }
         }
 
-        // don't let drone "inside" resource; instead just reverse velocity and set new location
-        this.handleResourceCollision(collidedResourceIndex);
+        return null;
     }
 
     handleResourceCollision(collidedResourceIndex) {
@@ -71,7 +78,7 @@ class Drone {
             this.velocity.rotate(180);
 
             // assure that drone is not stuck "inside" resource
-            while (this.checkForResourceCollision() !== null) {
+            while (this.checkForResourceCollision(qtree) !== null) {
                 this.location.add(this.velocity);
             }
 
@@ -85,7 +92,13 @@ class Drone {
 
     listenToMe() {
         let newAnnoucement = false;
-        for (let listeningDrone of drones) {
+        // let listeningRange = new Circle(this.location.x, this.location.y, droneListeningDistance + droneRadius);
+        let listeningRange = new Rectangle(this.location.x, this.location.y, droneListeningDistance + droneRadius, droneListeningDistance + droneRadius);
+        let points = qtree.queryRange(listeningRange);
+
+        for (let point of points) {
+            let listeningDrone = point.userData;
+
             // ignore self
             if (this === listeningDrone) {
                 continue;
@@ -123,19 +136,6 @@ class Drone {
         this.announcing = false;
 
         return newAnnoucement;
-    }
-
-    checkForResourceCollision() {
-        // for each resource, if distance between resource and ball
-        // is < sum of radius of drone + resource then collision has occurred
-
-        for (let i = 0; i < resources.length; i++) {
-            if (this.location.dist(resources[i].location) < resourceRadius) {
-                return i;
-            }
-        }
-
-        return null;
     }
 
     show() {

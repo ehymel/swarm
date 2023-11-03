@@ -1,3 +1,5 @@
+let qtree;
+
 function setup() {
     createCanvas(600, 400);
 
@@ -46,7 +48,7 @@ function start() {
         resources[i] = new Resource(resourceLabels[i], resourceColors[i], resourceLocations[i]);
     }
 
-    drones = Array(2000);
+    drones = Array(4000);
     for (let i = 0; i < drones.length; i++) {
         drones[i] = new Drone();
         while (drones[i].checkForResourceCollision() !== null) {
@@ -73,8 +75,16 @@ function draw() {
         r.show();
     }
 
+    let boundary = new Rectangle(width / 2, height / 2, width, height);
+    this.qtree = new QuadTree(boundary, 4);
+    console.log(this.qtree);
+
     for (let d of drones) {
         d.move();
+        let point = new Point(d.location.x, d.location.y, d);
+        this.qtree.insert(point);
+
+        d.checkForResourceCollision(this.qtree);
     }
 
     let newAnnouncement = false;

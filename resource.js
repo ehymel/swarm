@@ -3,6 +3,8 @@ class Resource {
         this.label = label;
         this.resourceColor = resourceColor;
         this.location = location;
+
+        this.boundary = new Circle(this.location.x, this.location.y, resourceRadius + droneRadius);
     }
 
     show() {
