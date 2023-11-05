@@ -4,7 +4,8 @@ class Resource {
         this.resourceColor = resourceColor;
         this.location = location;
 
-        this.boundary = new Circle(this.location.x, this.location.y, resourceRadius + droneRadius);
+        this.range = new Circle(this.location.x, this.location.y, resourceRadius + droneRadius);
+        // this.range = new Rectangle(this.location.x, this.location.y, resourceRadius + droneRadius, resourceRadius + droneRadius);
     }
 
     show() {

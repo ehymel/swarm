@@ -7,6 +7,7 @@ class Drone {
         this.droneColor = color(255);
         this.announcing = false;
         this.targetResourceIndex = null;
+        this.point = null;
 
         this.stepCount = [];
         for (let i = 0; i < resources.length; i++) {
@@ -32,7 +33,7 @@ class Drone {
 
         this.velocity.rotate(random(-this.maxAngleVariation, this.maxAngleVariation));
 
-        this.location.add(this.velocity);
+        this.location.add(this.velocity)
 
         // don't let item go off screen
         if (this.location.x - droneRadius < 0) {
@@ -49,63 +50,43 @@ class Drone {
         }
     }
 
-    checkForResourceCollision(qtree) {
-        // only need to check items within quadtree boundaries
-        for (let i = 0; i < resources.length; i++) {
-            let nearbyPoints = qtree.queryRange(resources[i].boundary);
-
-            for (let point of nearbyPoints) {
-                if (this === point.userData) {
-                    this.announcing = true;
-                    this.handleResourceCollision(collidedResourceIndex);
-                    return i;
-                }
-            }
-        }
-
-        return null;
-    }
+    // checkForResourceCollision() {
+    //     for (let i = 0; i < resources.length; i++) {
+    //         let qtree.queryRange())
+    //         if (this.location.dist(resources[i].location) <= resourceRadius + droneRadius) {
+    //             this.handleResourceCollision(i);
+    //         }
+    //     }
+    // }
 
     handleResourceCollision(collidedResourceIndex) {
-        // change appropriate step count to zero
         this.stepCount[collidedResourceIndex] = 0;
-
-        // announce location for others to listen
         this.announcing = true;
 
         if (null === this.targetResourceIndex || collidedResourceIndex === this.targetResourceIndex) {
-            // reverse course
             this.velocity.rotate(180);
+            this.location.add(this.velocity);
+            this.point.location = this.location;
 
-            // assure that drone is not stuck "inside" resource
-            while (this.checkForResourceCollision(qtree) !== null) {
-                this.location.add(this.velocity);
-            }
-
-            // set new target resource
             this.targetResourceIndex = (collidedResourceIndex + 1) % resources.length;
-
-            // change color to match new target resource
             this.droneColor = resources[this.targetResourceIndex].resourceColor;
         }
     }
 
     listenToMe() {
         let newAnnoucement = false;
-        // let listeningRange = new Circle(this.location.x, this.location.y, droneListeningDistance + droneRadius);
+
+        // listeningRange should be a circle, however this really bogs down the process (as judged by frameRate() in browser console)
+        // Using rectangle much faster and makes for a close approximation.
         let listeningRange = new Rectangle(this.location.x, this.location.y, droneListeningDistance + droneRadius, droneListeningDistance + droneRadius);
-        let points = qtree.queryRange(listeningRange);
+        // let listeningRange = new Circle(this.location.x, this.location.y, droneListeningDistance + droneRadius);
+        let points = qtree.queryRange(listeningRange, []);
 
         for (let point of points) {
             let listeningDrone = point.userData;
 
             // ignore self
             if (this === listeningDrone) {
-                continue;
-            }
-
-            // ignore if too far away
-            if (this.location.dist(listeningDrone.location) > droneListeningDistance) {
                 continue;
             }
 

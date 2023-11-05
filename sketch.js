@@ -1,7 +1,7 @@
-let qtree;
-
 function setup() {
     createCanvas(600, 400);
+    boundary = new Rectangle(width / 2, height / 2, width, height);
+    qtree = new QuadTree(boundary, 4);
 
     droneRadius = 0.5;
     droneListeningDistance = 28;
@@ -48,12 +48,9 @@ function start() {
         resources[i] = new Resource(resourceLabels[i], resourceColors[i], resourceLocations[i]);
     }
 
-    drones = Array(4000);
+    drones = Array(1500);
     for (let i = 0; i < drones.length; i++) {
         drones[i] = new Drone();
-        while (drones[i].checkForResourceCollision() !== null) {
-            drones[i] = new Drone();
-        }
     }
 }
 
@@ -75,16 +72,21 @@ function draw() {
         r.show();
     }
 
-    let boundary = new Rectangle(width / 2, height / 2, width, height);
-    this.qtree = new QuadTree(boundary, 4);
-    console.log(this.qtree);
+    qtree = new QuadTree(boundary, 4);
 
     for (let d of drones) {
         d.move();
         let point = new Point(d.location.x, d.location.y, d);
-        this.qtree.insert(point);
+        qtree.insert(point);
+        d.point = point;
+    }
 
-        d.checkForResourceCollision(this.qtree);
+    // get points near resources; only these need to be checked for resource Collision
+    for (let i = 0; i < resources.length; i++) {
+        let collidedPoints = qtree.queryRange(resources[i].range);
+        for (let p of collidedPoints) {
+            p.userData.handleResourceCollision(i);
+        }
     }
 
     let newAnnouncement = false;
